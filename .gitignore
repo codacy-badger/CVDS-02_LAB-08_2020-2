@@ -1,0 +1,16 @@
+/target/
+.#*
+*.log
+
+# Maven files
+target/
+
+# IntelliJ files
+.idea/
+*.iml
+
+# Eclipse files
+.settings/
+.project/
+.classpath
+.DS_Store
