@@ -3,13 +3,15 @@ package edu.eci.cvds.samples.services;
 import com.google.inject.Injector;
 import edu.eci.cvds.sampleprj.dao.ClienteDAO;
 import edu.eci.cvds.sampleprj.dao.ItemDAO;
+import edu.eci.cvds.sampleprj.dao.ItemRentadoDAO;
 import edu.eci.cvds.sampleprj.dao.TipoItemDAO;
 import edu.eci.cvds.sampleprj.dao.mybatis.MyBATISClienteDAO;
 import edu.eci.cvds.sampleprj.dao.mybatis.MyBATISItemDAO;
+import edu.eci.cvds.sampleprj.dao.mybatis.MyBATISItemRentadoDAO;
 import edu.eci.cvds.sampleprj.dao.mybatis.MyBATISTipoItemDAO;
-import edu.eci.cvds.samples.services.impl.ServiciosAlquilerItemsImpl;
-import org.apache.ibatis.transaction.TransactionFactory;
-import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+
+import edu.eci.cvds.samples.services.impl.ServiciosAlquilerImpl;
+
 import org.mybatis.guice.XMLMyBatisModule;
 
 import java.util.Optional;
@@ -29,7 +31,11 @@ public class ServiciosAlquilerFactory {
                 setEnvironmentId(env);
                 setClassPathResource(pathResource);
                 bind(ItemDAO.class).to(MyBATISItemDAO.class);
-                bind(ServiciosAlquiler.class).to(ServiciosAlquilerItemsImpl.class);
+                bind(TipoItemDAO.class).to(MyBATISTipoItemDAO.class);
+                bind(ClienteDAO.class).to(MyBATISClienteDAO.class);
+                bind(ItemRentadoDAO.class).to(MyBATISItemRentadoDAO.class);
+                bind(ServiciosAlquiler.class).to(ServiciosAlquilerImpl.class);
+
             }
         });
     }
@@ -46,7 +52,6 @@ public class ServiciosAlquilerFactory {
         return optInjector.get().getInstance(ServiciosAlquiler.class);
     }
 
-
     public ServiciosAlquiler getServiciosAlquilerTesting(){
         if (!optInjector.isPresent()) {
             optInjector = Optional.of(myBatisInjector("test","mybatis-config-h2.xml"));
@@ -54,7 +59,6 @@ public class ServiciosAlquilerFactory {
 
         return optInjector.get().getInstance(ServiciosAlquiler.class);
     }
-
 
     public static ServiciosAlquilerFactory getInstance(){
         return instance;

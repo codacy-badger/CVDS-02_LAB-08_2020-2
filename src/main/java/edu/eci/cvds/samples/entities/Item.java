@@ -36,9 +36,9 @@ public class Item implements Serializable{
     public Item() {
     }
 
-    
-    
-    
+
+
+
     public TipoItem getTipo() {
         return tipo;
     }
@@ -107,12 +107,6 @@ public class Item implements Serializable{
 
     @Override
     public String toString() {
-        return "Item{" + "tipo=" + tipo + ", id=" + id + ", nombre=" + nombre + ", tarifaxDia=" + tarifaxDia + '}';
+        return "Item " +"nombre: "+nombre+" descripcion: "+descripcion+" fecha: "+fechaLanzamiento+"{" + "tipo=" + tipo + ", id=" + id + ", tarifaxDia=" + tarifaxDia + '}';
     }
-
-
-    
-    
-    
-    
 }
