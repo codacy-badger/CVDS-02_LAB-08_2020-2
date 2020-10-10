@@ -4,44 +4,45 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
   
 <mapper namespace="edu.eci.cvds.sampleprj.dao.mybatis.mappers.ItemMapper">
-    <insert parameterType="map" id="insertarItem">
-    	insert into VI_ITEMS(id,nombre,descripcion,fechaLanzamiento,tarifaxdia,formatorenta,genero,TIPOITEM_id) values(#{item.id},#{item.nombre},#{item.descripcion},#{item.fechaLanzamiento},#{item.tarifaxDia},#{item.formatoRenta},#{item.genero},#{item.tipo.id})
-    </insert>
-    <select parameterType="map" id="consultarItem" resultMap="ItemResult">
-		SELECT
-        i.id ,
-        i.nombre ,
-        i.descripcion,
-        i.fechalanzamiento  ,
-        i.tarifaxdia  ,
-        i.formatorenta  ,
-        i.genero ,
-        ti.id as tipoitem_id,
-        ti.descripcion as tipoitem_descripcion
-        from VI_ITEMS as i ,VI_TIPOITEM as ti
-        where i.TIPOITEM_id=ti.id and i.id = #{idit}
-	</select>
-    <select parameterType="map" id="consultarItems" resultMap="ItemResult">
-		SELECT
-        i.id ,
-        i.nombre ,
-        i.descripcion,
-        i.fechalanzamiento  ,
-        i.tarifaxdia  ,
-        i.formatorenta  ,
-        i.genero ,
-        ti.id as tipoitem_id,
-        ti.descripcion as tipoitem_descripcion
-        from VI_ITEMS as i ,VI_TIPOITEM as ti
-	</select>
-    <resultMap type='Item' id='ItemResult'>
-        <id property='id' column='id'/>
-        <result property='nombre' column='nombre'/>
-        <result property='descripcion' column='descripcion'/>
-        <result property='fechaLanzamiento' column='fechalanzamiento'/>
-        <result property='tarifaxDia' column='tarifaxdia'/>
-        <result property='formatoRenta' column='formatorenta'/>
-        <result property='genero' column='genero'/>
-        <association property='tipo' column='TIPOITEM_id' resultMap="edu.eci.cvds.sampleprj.dao.mybatis.mappers.TipoItemMapper.TipoItemResult" columnPrefix='tipoitem_'></association>
-    </resultMap>
+  <select parameterType="map" id="consultarItems" resultMap="ItemResult">
+		select i.id as i_id, i.nombre as i_nombre, i.descripcion as i_descripcion, i.fechalanzamiento as i_fechaLanzamiento, i.tarifaxdia as i_tarifaxdia, i.formatorenta as i_formatorenta, i.genero as i_genero, ti.id as ti_id, ti.descripcion as ti_descripcion
+    FROM VI_ITEMS as i left join VI_TIPOITEM as ti on i.TIPOITEM_id=ti.id;
+  </select>
+
+  <select parameterType="map" id="consultarItem" resultMap="ItemResult">
+		select i.id as i_id, i.nombre as i_nombre, i.descripcion as i_descripcion, i.fechalanzamiento as i_fechaLanzamiento, i.tarifaxdia as i_tarifaxdia, i.formatorenta as i_formatorenta, i.genero as i_genero, ti.id as ti_id, ti.descripcion as ti_descripcion
+    FROM VI_ITEMS as i left join VI_TIPOITEM as ti on i.TIPOITEM_id=ti.id
+    WHERE i.id = #{idt};
+  </select>
+
+  <select parameterType="map" id="consultarMultaRetrasoxDia" resultMap="ItemResult">
+    select i.tarifaxdia
+    FROM VI_ITEMS as i
+    WHERE i.id=#{id};
+  </select>
+
+  <select parameterType="map" id="consultarItemsDisponibles" resultMap="ItemResult">
+    select i.nombre as i_nombre, i.descripcion as i_descripcion
+    FROM VI_ITEMS as i
+    WHERE i.id not in (SELECT ir.id from VI_ITEMRENTADO as ir);
+  </select>
+
+  <update parameterType="map" id="actualizarTarifaItem">
+    update VI_ITEMS set tarifaxdia=#{tarifa} where id=#{id};
+  </update>
+  <!-- Item -->	
+  <resultMap id="ItemResult" type="Item">
+    <id property="id" column="i_id"/>
+    <result property="nombre" column="i_nombre"/>
+    <result property="descripcion" column="i_descripcion"/>
+    <result property="fechaLanzamiento" column="i_fechaLanzamiento"/>
+    <result property="tarifaxDia" column="i_tarifaxdia"/>
+    <result property="formatoRenta" column="i_formatorenta"/>
+    <result property="genero" column="i_genero"/>
+    <association property="tipo" javaType="TipoItem" resultMap="edu.eci.cvds.sampleprj.dao.mybatis.mappers.TipoItemMapper.TipoItemResult" columnPrefix="ti_" />
+  </resultMap>
+
+  <insert id="insertarItem" parameterType="map">
+    insert into VI_ITEMS(nombre,descripcion,fechalanzamiento,tarifaxdia,formatorenta,genero,TIPOITEM_id,id) values (#{item.nombre},#{item.descripcion},#{item.fechaLanzamiento},#{item.tarifaxDia},#{item.formatoRenta},#{item.genero},#{item.tipo.id},#{item.id});
+  </insert>
 </mapper>

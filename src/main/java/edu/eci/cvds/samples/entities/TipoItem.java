@@ -22,6 +22,9 @@ public class TipoItem implements Serializable{
 
     public TipoItem() {
     }
+    
+    
+    
 
     public int getID() {
         return id;
@@ -30,6 +33,8 @@ public class TipoItem implements Serializable{
     public void setID(int ID) {
         this.id = ID;
     }
+
+    
 
     public String getDescripcion() {
         return descripcion;
@@ -43,4 +48,6 @@ public class TipoItem implements Serializable{
     public String toString() {
         return "TipoItem{" + "id=" + id + ", descripcion=" + descripcion + '}';
     }
+    
+    
 }

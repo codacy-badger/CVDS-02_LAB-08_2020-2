@@ -16,8 +16,6 @@
  */
 package edu.eci.cvds.sampleprj.jdbc.example;
 
-import org.apache.ibatis.session.SqlSessionException;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -33,6 +31,7 @@ import java.util.logging.Logger;
  * @author hcadavid
  */
 public class JDBCExample {
+    
     public static void main(String args[]){
         try {
             String url="jdbc:mysql://desarrollo.is.escuelaing.edu.co:3306/bdprueba";
@@ -58,11 +57,10 @@ public class JDBCExample {
             System.out.println("-----------------------");
             
             
-            int suCodigoECI=2158547;
-            registrarNuevoProducto(con, suCodigoECI, "Nikolas Bernal", 5000);
+            int suCodigoECI=2159518;
+            /* registrarNuevoProducto(con, suCodigoECI, "SU NOMBRE", 99999999);   */          
             con.commit();
-                        
-            
+
             con.close();
                                    
         } catch (ClassNotFoundException | SQLException ex) {
@@ -80,7 +78,8 @@ public class JDBCExample {
      * @param precio
      * @throws SQLException 
      */
-    public static void registrarNuevoProducto(Connection con, int codigo, String nombre,int precio) throws SQLException {
+    public static void registrarNuevoProducto(Connection con, int codigo, String nombre,int precio) throws SQLException{
+
         PreparedStatement insertarProducto = null;
         String sentencia = "INSERT INTO ORD_PRODUCTOS VALUES (?,?,?);";
         insertarProducto = con.prepareStatement(sentencia);
@@ -89,6 +88,7 @@ public class JDBCExample {
         insertarProducto.setInt(3, precio);
         insertarProducto.executeUpdate();
         con.commit();
+        
     }
     
     /**
@@ -98,23 +98,21 @@ public class JDBCExample {
      * @return 
      */
     public static List<String> nombresProductosPedido(Connection con, int codigoPedido){
+
         List<String> np=new LinkedList<>();
-        String sentencia = "SELECT nombre,pedido_fk"+"FROM ORD_PRODUCTOS produ, ORD_DETALLE_PEDIDO pedi"+"WHERE produ.codigo=pedi.producto_fk"+"ORDER BY pedi.pedido_fk;";
-
+        PreparedStatement nombres = null;
+        String sentencia = "SELECT nombre, pedido_fk FROM ORD_PRODUCTOS produ ,ORD_DETALLE_PEDIDO pedi WHERE produ.codigo=pedi.producto_fk ORDER BY pedi.pedido_fk;";
         try {
-            con.setAutoCommit(false);
-            PreparedStatement nombre = con.prepareStatement(sentencia);
-            ResultSet resultSet = nombre.executeQuery();
-
-            while (resultSet.next()){
-                String nombreProducto = resultSet.getString("nombre");
-                String numeroPedido = resultSet.getString("pedido_fk");
-                np.add(nombreProducto);
-                np.add(numeroPedido);
+            nombres = con.prepareStatement(sentencia);
+            ResultSet resultNombres = nombres.executeQuery();
+            while(resultNombres.next()){
+                String nombreProducto = resultNombres.getString("nombre");
+                String numeroPedido = resultNombres.getString("pedido_fk");
+                np.add(nombreProducto); np.add(numeroPedido);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-        catch(SQLException e){}
-        
         return np;
     }
 
@@ -126,20 +124,24 @@ public class JDBCExample {
      * @return el costo total del pedido (suma de: cantidades*precios)
      */
     public static int valorTotalPedido(Connection con, int codigoPedido){
-        int valorTotal = 0;
-        String sentencia = "SELECT sum(cantidad) as valor "+"FROM ORD_DETALLE_PEDIDO pedi "+"WHERE pedido_fk="+codigoPedido+" "+"ORDER BY pedido_fk;";
-
-        try{
-            con.setAutoCommit(false);
-            PreparedStatement preparedStatement = con.prepareStatement(sentencia);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while(resultSet.next()){
-                valorTotal = resultSet.getInt("valor");
-            }
-        }
-        catch(SQLException e){}
         
-        return valorTotal;
+        PreparedStatement valorPedido = null;
+        String sentencia = "SELECT sum(cantidad) as valor FROM ORD_DETALLE_PEDIDO pedi WHERE pedido_fk="+codigoPedido+" "+"ORDER BY pedido_fk;";
+        int total = 0;
+        try {
+            valorPedido = con.prepareStatement(sentencia);
+            ResultSet valor = valorPedido.executeQuery();
+            while(valor.next()){
+                total = valor.getInt("valor");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return total;
     }
+    
+
+    
+    
+    
 }

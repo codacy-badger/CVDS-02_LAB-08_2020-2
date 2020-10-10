@@ -1,15 +1,15 @@
 package edu.eci.cvds.sampleprj.dao.mybatis;
 
+import java.util.Date;
+import java.util.List;
+
 import com.google.inject.Inject;
+
 import edu.eci.cvds.sampleprj.dao.ClienteDAO;
 import edu.eci.cvds.sampleprj.dao.PersistenceException;
 import edu.eci.cvds.sampleprj.dao.mybatis.mappers.ClienteMapper;
 import edu.eci.cvds.samples.entities.Cliente;
 import edu.eci.cvds.samples.entities.ItemRentado;
-import org.mybatis.guice.transactional.Transactional;
-
-import java.util.Date;
-import java.util.List;
 
 public class MyBATISClienteDAO implements ClienteDAO {
 
@@ -17,66 +17,59 @@ public class MyBATISClienteDAO implements ClienteDAO {
     private ClienteMapper clienteMapper;
 
     @Override
-    public List<Cliente> consultarClientes() throws PersistenceException{
-        try{
-            return clienteMapper.consultarClientes();
-        }
-        catch(org.apache.ibatis.exceptions.PersistenceException e){
-            throw new PersistenceException("Error al consultar clientes",e);
-        }
-
-
-    }
-
-    @Override
-    public Cliente consultarCliente(long id) throws PersistenceException {
-        try{
+    public Cliente load(long id) throws PersistenceException {
+        try {
             return clienteMapper.consultarCliente(id);
-        }
-        catch(org.apache.ibatis.exceptions.PersistenceException e){
-            throw new PersistenceException("Error al consultar cliente con documento"+id,e);
-        }
-    }
-    @Transactional
-    @Override
-    public void agregarItemRentadoACliente(long id, int idit, Date fechainicio, Date fechafin) throws PersistenceException {
-        try{
-            clienteMapper.agregarItemRentadoACliente(id,idit,fechainicio,fechafin);
-        }
-        catch(org.apache.ibatis.exceptions.PersistenceException e){
-            throw new PersistenceException("Error al agregar item rentado al cliente con id del item : "+id+" y id del tipo del item:"+idit,e);
+        } catch (org.apache.ibatis.exceptions.PersistenceException e) {
+            throw new PersistenceException("Error al consultar el Clinete con el id: " + id, e);
         }
     }
 
     @Override
-    public List<ItemRentado> consultarItemsCliente(long idcliente) throws PersistenceException {
-        try{
-            return clienteMapper.consultarItems(idcliente);
+    public void saveItemRentadoCliente(long idcli, int idit, Date fechainicio, Date fechafin) throws PersistenceException {
+        try {
+            clienteMapper.agregarItemRentadoACliente(idcli, idit, fechainicio, fechafin);
+        } catch (org.apache.ibatis.exceptions.PersistenceException e) {
+            throw new PersistenceException("Error al añadir el nuevo cliente", e);
         }
-        catch(org.apache.ibatis.exceptions.PersistenceException e){
-            throw new PersistenceException("Error al consultar los items del client" ,e);
+
+    }
+
+    @Override
+    public List<Cliente> loadClientes() throws PersistenceException {
+        try {
+            return clienteMapper.consultarClientes();
+        } catch (Exception e) {
+            throw new PersistenceException("Error al consultar todos los clientes", e);
         }
     }
 
-    @Transactional
     @Override
-    public void registrarCliente(Cliente c) throws PersistenceException {
-        try{
+    public List<ItemRentado> loadItemsCliente(long idCliente) throws PersistenceException {
+        try {
+            return clienteMapper.consultarItems(idCliente);
+        } catch (Exception e) {
+            throw new PersistenceException("Error al consultar los items de los clientes", e);
+        }
+    }
+
+    @Override
+    public void addCliente(Cliente c) throws PersistenceException {
+        try {
             clienteMapper.registrarCliente(c);
+        } catch (Exception e) {
+            throw new PersistenceException(e.toString(), e);
         }
-        catch(org.apache.ibatis.exceptions.PersistenceException e){
-            throw new PersistenceException("Error al registrar al cliente" ,e);
-        }
+
     }
 
-    @Transactional
     @Override
     public void vetarCliente(long docu, boolean estado) throws PersistenceException {
-        try{
-            clienteMapper.vetarCliente(docu,estado);
+        try {
+            clienteMapper.vetarCliente(docu, estado);
+        } catch (Exception e) {
+            throw new PersistenceException("Error al vetar al cliente con documento "+docu, e);
         }
-        catch(org.apache.ibatis.exceptions.PersistenceException e){
-            throw new PersistenceException("Error al vetar cliente" ,e);
-        }
-    }
+
+    }    
 }

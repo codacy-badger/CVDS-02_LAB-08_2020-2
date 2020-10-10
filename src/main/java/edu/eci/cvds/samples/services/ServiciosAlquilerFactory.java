@@ -39,7 +39,6 @@ public class ServiciosAlquilerFactory {
             }
         });
     }
-
     private ServiciosAlquilerFactory(){
         optInjector = Optional.empty();
     }
@@ -52,6 +51,7 @@ public class ServiciosAlquilerFactory {
         return optInjector.get().getInstance(ServiciosAlquiler.class);
     }
 
+
     public ServiciosAlquiler getServiciosAlquilerTesting(){
         if (!optInjector.isPresent()) {
             optInjector = Optional.of(myBatisInjector("test","mybatis-config-h2.xml"));
@@ -59,6 +59,7 @@ public class ServiciosAlquilerFactory {
 
         return optInjector.get().getInstance(ServiciosAlquiler.class);
     }
+
 
     public static ServiciosAlquilerFactory getInstance(){
         return instance;

@@ -1,10 +1,12 @@
 package edu.eci.cvds.samples.services;
 
-public class ExcepcionServiciosAlquiler extends Exception {
-    public ExcepcionServiciosAlquiler(String mensaje,Exception e){
-        super(mensaje,e);
+public class ExcepcionServiciosAlquiler extends Exception{
+
+    public ExcepcionServiciosAlquiler(String message){
+        super(message);
     }
-    public ExcepcionServiciosAlquiler(String mensaje){
-        super(mensaje);
+
+    public ExcepcionServiciosAlquiler(String message, Exception e) {
+        super(message+e.toString());
     }
 }
